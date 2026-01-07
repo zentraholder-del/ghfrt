@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Username</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .container.fade-out {
+            opacity: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .username-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .text-button {
+            background: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            font-weight: normal;
+            padding: 10px;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+
+        .text-button:hover {
+            color: #fff;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <div id="loginSection">
+            <h1>Enter your username please</h1>
+            <input type="text" id="usernameInput" placeholder="Type your username..." maxlength="20">
+            <button onclick="saveUsername()">Continue</button>
+        </div>
+
+        <div id="welcomeSection" class="hidden">
+            <div class="welcome">Welcome back,</div>
+            <div class="username-display" id="displayUsername"></div>
+            <button onclick="continueToMain()">Continue</button>
+            <button class="text-button" onclick="changeUsername()">Change username</button>
+        </div>
+    </div>
+
+    <script>
+        let username = '';
+
+        window.onload = function() {
+            const saved = getUsername();
+            if (saved) {
+                username = saved;
+                showWelcome();
+            }
+        };
+
+        function saveUsername() {
+            const input = document.getElementById('usernameInput');
+            const name = input.value.trim();
+            
+            if (name === '') {
+                alert('Please enter a username!');
+                return;
+            }
+
+            username = name;
+            document.cookie = `username=${encodeURIComponent(name)}; max-age=${60*60*24*365}; path=/`;
+            showWelcome();
+        }
+
+        function getUsername() {
+            const cookies = document.cookie.split('; ');
+            for (let cookie of cookies) {
+                const [key, value] = cookie.split('=');
+                if (key === 'username') {
+                    return decodeURIComponent(value);
+                }
+            }
+            return null;
+        }
+
+        function showWelcome() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('welcomeSection').classList.remove('hidden');
+            document.getElementById('displayUsername').textContent = username;
+        }
+
+        function changeUsername() {
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('welcomeSection').classList.add('hidden');
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('usernameInput').focus();
+        }
+
+        function continueToMain() {
+            const container = document.getElementById('mainContainer');
+            container.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = 'main.html';
+            }, 500);
+        }
+
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveUsername();
+            }
+        });
+    </script>
+</body>
+</html>
